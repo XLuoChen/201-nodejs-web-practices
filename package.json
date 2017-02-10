@@ -1,0 +1,30 @@
+{
+  "name": "mongoose01",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "babel-node": "babel-node",
+    "start": "nodemon --exec npm run babel-node -- app.js",
+    "refreshMongo": "babel-node  ./tools/refreshMongo.js",
+    "test": "./node_modules/.bin/mocha spec/*spec.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.1.4",
+    "config": "^1.24.0",
+    "express": "^4.14.0",
+    "mongoose": "^4.7.6",
+    "should": "^11.2.0"
+  },
+  "devDependencies": {
+    "async": "^2.1.4",
+    "babel-cli": "^6.18.0",
+    "babel-preset-latest": "^6.16.0",
+    "body-parser": "^1.16.0",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "supertest": "^3.0.0"
+  }
+}
