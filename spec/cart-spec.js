@@ -1,17 +1,18 @@
 require('should');
 const supertest = require('supertest');
+const express = require('express');
 const app = require('../app');
 const request = supertest(app);
 
-const Cart = require('../model/cart');
 const refresh = require('../tools/refreshMongo');
+const Cart = require('../model/cart');
 
 describe('CartController', () => {
   beforeEach(() => {
     refresh();
   });
 
-  it('GET /carts should return all carts', (done) => {
+  it('GET /carts', (done) => {
     request
       .get('/carts')
       .expect(200)
@@ -41,12 +42,12 @@ describe('CartController', () => {
             "uri": "items/587f0f2586653d19297d40c4",
             "count": 1
           }]
-        })
+        });
       })
       .end(done);
   });
 
-  it('POST /carts', (done) => {
+  it('POST /carts',(done)=>{
     const cart = {
       userId: '2',
       items: [
@@ -59,6 +60,7 @@ describe('CartController', () => {
 
     request
       .post('/carts')
+      .send(cart)
       .expect(201)
       .expect((res) => {
         Cart.findOne({userId: '2'}, (err, doc) => {
@@ -68,14 +70,14 @@ describe('CartController', () => {
       .end(done);
   });
 
-  it('DELETE /carts/:cartId', (done) => {
+  it('DELETE /carts/:cartId',(done)=>{
     request
       .delete('/carts/587f0f2586653d19297d40c6')
       .expect(204)
       .end(done);
   });
 
-  it('PUT /carts/:cartId', (done) => {
+  it('PUT /carts/:cartId',(done)=>{
     const cart = {
       userId: '9',
       items: [

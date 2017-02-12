@@ -1,7 +1,6 @@
 require('should');
 const supertest = require('supertest');
 const express = require('express');
-
 const app = require('../app');
 const request = supertest(app);
 
@@ -23,7 +22,7 @@ describe('ItemController', () => {
       .end(done);
   });
 
-  it('GET /items/:itemId should return a item', (done) => {
+  it('GET /items/itemId should return a item', (done) => {
     request
       .get('/items/587f0f2586653d19297d40c2')
       .expect(200)
@@ -40,43 +39,43 @@ describe('ItemController', () => {
           "__v": 0
         })
       })
-      .end(done)
-  })
+      .end(done);
+  });
 
-  it('POST /items should return uri', (done) => {
+  it('POST /items  should return uri', (done) => {
     const item = {
       name: 'test',
       price: 45,
       categoryId: '587f0f2586653d19297d40c8'
     };
-
     request
       .post('/items')
       .send(item)
       .expect(201)
       .expect((res) => {
         Item.findOne(item, (err, doc) => {
-          res.body.uri.should.equal(`items/${doc._id}`);
+          res.body.uri.should.equal(`items/${doc}`)
         });
       })
       .end(done);
   });
 
-  it('DELETE /items/:itemId should return 204', (done) => {
+  it('DELETE /items/itemId should return 204', (done) => {
     request
       .delete('/items/587f0f2586653d19297d40c2')
       .expect(204)
       .end(done);
   });
 
-  it('PUT /items/:itemId should return 204',(done)=>{
+  it('PUT /items/:itemId should return 204', (done) => {
     const item = {
       name: 'test6',
       price: 34,
       categoryId: '587f0f2586653d19297d40c8'
     };
+
     request
-      .put('/items/587f0f2586653d19297d40c3')
+      .put('items/587f0f2586653d19297d40c3')
       .send(item)
       .expect(204)
       .end(done);
