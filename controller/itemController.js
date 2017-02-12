@@ -8,7 +8,7 @@ class ItemController {
       item: (cb) => {
         Item.find({})
           .populate('categoryId')
-          .exec(cb);
+          .exec(cb)
       },
       totalCount: (cb) => {
         Item.count(cb);
@@ -33,7 +33,7 @@ class ItemController {
           return res.sendStatus(constant.httpCode.NOT_FOUND);
         }
         return res.status(constant.httpCode.OK).send(doc);
-      })
+      });
   }
 
   create(req, res, next) {
@@ -41,7 +41,7 @@ class ItemController {
       if (err) {
         return next(err);
       }
-      return res.status(constant.httpCode.CREATED).send(`items/${doc._id}`);
+      return res.status(constant.httpCode.CREATED).send({uri: `items/${doc._id}`});
     });
   }
 

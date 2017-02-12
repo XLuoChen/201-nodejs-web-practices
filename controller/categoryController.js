@@ -26,9 +26,6 @@ class CategoryController {
       if (err) {
         return next(err);
       }
-      if (!doc) {
-        return res.sendStatus(constant.httpCode.NOT_FOUND);
-      }
       return res.status(constant.httpCode.OK).send(doc);
     });
   }
@@ -47,10 +44,10 @@ class CategoryController {
     async.waterfall([
       (done) => {
         Item.findOne({categoryId}, done);
-      }, (data, done) => {
+      },
+      (data, done) => {
         if (data) {
           done(true, null);
-
         } else {
           Category.findOneAndRemove({'_id': categoryId}, done);
         }
@@ -63,7 +60,7 @@ class CategoryController {
         return next(err);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);
-    });
+    })
   }
 
   update(req, res, next) {
@@ -75,7 +72,7 @@ class CategoryController {
       if (!doc) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      res.sendStatus(constant.httpCode.NO_CONTENT);
+      return res.sendStatus(constant.httpCode.NO_CONTENT);
     });
   }
 }

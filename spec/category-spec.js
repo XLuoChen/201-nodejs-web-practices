@@ -3,7 +3,6 @@ const supertest = require('supertest');
 const express = require('express');
 const app = require('../app');
 const request = supertest(app);
-
 const refresh = require('../tools/refreshMongo');
 const Category = require('../model/category');
 
@@ -12,7 +11,7 @@ describe('CategoryController', () => {
     refresh();
   });
 
-  it('GET /categories', (done) => {
+  it('GET /categories should return all categories', (done) => {
     request
       .get('/categories')
       .expect(200)
@@ -22,7 +21,7 @@ describe('CategoryController', () => {
       .end(done);
   });
 
-  it('GET /categories/categoryId', (done) => {
+  it('GET /categories/:categoryId', (done) => {
     request
       .get('/categories/587f0f2586653d19297d40c8')
       .expect(200)
@@ -38,7 +37,7 @@ describe('CategoryController', () => {
 
   it('POST /categories', (done) => {
     const category = {
-      name: '分类一',
+      name: '分类一'
     };
 
     request
@@ -53,18 +52,15 @@ describe('CategoryController', () => {
       .end(done);
   });
 
-  it('DELETE /categories/categoryId', (done) => {
+  it('DELETE /categories/:categoryId', (done) => {
     request
       .delete('/categories/587f0f2586653d19297d40c8')
       .expect(403)
       .end(done);
   });
 
-  it('PUT /categories/categoryId', (done) => {
-    const category = {
-      name: '测试分类'
-    };
-
+  it('PUT /categories/:categoryId', (done) => {
+    const category = {name: '测试分类'};
     request
       .put('/categories/587f0f2586653d19297d40c9')
       .send(category)

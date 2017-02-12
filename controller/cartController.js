@@ -2,7 +2,7 @@ const async = require('async');
 const Cart = require('../model/cart');
 const constant = require('../config/constant');
 
-var loadItemUri = function (items) {
+const loadItemUri = function (items) {
   return items.map(({count, item}) => {
     return {uri: `items/${item}`, count};
   });
@@ -15,12 +15,12 @@ class CartController {
           if (err) {
             return next(err);
           }
-          const carts = doc.map(cart => {
-            const data = cart.toJSON();
-            data.items = loadItemUri(data.items);
+          const data = doc.map(item => {
+            const cart = item.toJSON();
+            cart.items = loadItemUri(cart.items);
             return cart;
           });
-          cb(null, carts);
+          cb(null, data);
         })
       },
       totalCount: (cb) => {
@@ -30,7 +30,7 @@ class CartController {
       if (err) {
         return next(err);
       }
-      return res.status(constant.httpCode.OK).send(result);
+      res.status(constant.httpCode.OK).send(result);
     });
   }
 
@@ -44,8 +44,7 @@ class CartController {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       const data = doc.toJSON();
-      let items = data.items;
-      data.items = loadItemUri(items);
+      data.items = loadItemUri(doc.items);
       return res.status(constant.httpCode.OK).send(data);
     });
   }
@@ -66,7 +65,7 @@ class CartController {
         return next(err);
       }
       if (!doc) {
-        return res.sendStatus(constant.httpCode.NOT_FOUND)
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);
     });
@@ -79,7 +78,7 @@ class CartController {
         return next(err);
       }
       if (!doc) {
-        return res.sendStatus(constant.httpCode.NOT_FOUND)
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);
     });
