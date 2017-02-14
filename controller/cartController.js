@@ -1,27 +1,29 @@
-const async = require('async');
 const Cart = require('../model/cart');
 const constant = require('../config/constant');
+const async = require('async');
 
-const loadItemUri = function (items) {
-  return items.map(({count, item}) => {
+const loadItemUri = (items) => {
+  return items = items.map(({count, item}) => {
     return {uri: `items/${item}`, count};
   });
 };
+
 class CartController {
   getAll(req, res, next) {
     async.series({
-      item: (cb) => {
+      items: (cb) => {
         Cart.find({}, (err, doc) => {
           if (err) {
             return next(err);
           }
-          const data = doc.map(item => {
-            const cart = item.toJSON();
+
+          let carts = doc.map((item) => {
+            let cart = item.toJSON();
             cart.items = loadItemUri(cart.items);
             return cart;
           });
-          cb(null, data);
-        })
+          cb(null, carts);
+        });
       },
       totalCount: (cb) => {
         Cart.count(cb);
@@ -30,7 +32,7 @@ class CartController {
       if (err) {
         return next(err);
       }
-      res.status(constant.httpCode.OK).send(result);
+      return res.status(constant.httpCode.OK).send(result);
     });
   }
 
@@ -43,19 +45,12 @@ class CartController {
       if (!doc) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      const data = doc.toJSON();
-      data.items = loadItemUri(doc.items);
-      return res.status(constant.httpCode.OK).send(data);
-    });
-  }
+      let data = doc.toJSON();
+      let items = doc.items;
+      data.items = loadItemUri(items);
 
-  create(req, res, next) {
-    new Cart(req.body).save((err, doc) => {
-      if (err) {
-        return next(err);
-      }
-      return res.status(constant.httpCode.CREATED).send({uri: `carts/${doc._id}`});
-    });
+      return res.status(constant.httpCode.OK).send(data);
+    })
   }
 
   delete(req, res, next) {
@@ -71,6 +66,15 @@ class CartController {
     });
   }
 
+  create(req, res, next) {
+    Cart.create(req.body, (err, doc) => {
+      if (err) {
+        return next(err);
+      }
+      return res.status(constant.httpCode.CREATED).send({uri: `carts/${doc._id}`});
+    });
+  }
+
   update(req, res, next) {
     const cartId = req.params.cartId;
     Cart.findOneAndUpdate({'_id': cartId}, req.body, (err, doc) => {
@@ -83,6 +87,7 @@ class CartController {
       return res.sendStatus(constant.httpCode.NO_CONTENT);
     });
   }
+
 }
 
 module.exports = CartController;

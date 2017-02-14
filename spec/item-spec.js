@@ -1,15 +1,13 @@
 require('should');
 const supertest = require('supertest');
-const app = require('../app');
-const express = require('express');
-const request = supertest(app);
-const Item = require('../model/item');
-const refresh = require('../tools/refreshMongo');
 
-describe('ItemController', () => {
-  beforeEach(() => {
-    refresh();
-  });
+const express = require('express');
+const app = require('../app');
+const request = supertest(app);
+
+const Item = require('../model/item');
+
+describe('ItemContronller', () => {
 
   it('GET /items should return all items', (done) => {
     request
@@ -30,7 +28,7 @@ describe('ItemController', () => {
           "_id": "587f0f2586653d19297d40c2",
           "name": "钢笔",
           "price": 12,
-          "categoryId": {
+          "category": {
             "_id": "587f0f2586653d19297d40c8",
             "name": "文具",
             "__v": 0
@@ -45,7 +43,7 @@ describe('ItemController', () => {
     const item = {
       name: 'test',
       price: 45,
-      categoryId: '587f0f2586653d19297d40c8'
+      category: '587f0f2586653d19297d40c8'
     };
 
     request
@@ -55,28 +53,32 @@ describe('ItemController', () => {
       .expect((res) => {
         Item.findOne(item, (err, doc) => {
           res.body.uri.should.equal(`items/${doc._id}`);
-        });
+        })
       })
       .end(done);
   });
 
-  it('DELETE /items/:itemId should return 204',(done)=>{
+  it('DELETE /items should return 204', (done) => {
+    const itemId = '587f0f2586653d19297d40c2';
+
     request
-      .delete('/items/587f0f2586653d19297d40c2')
+      .delete(`/items/${itemId}`)
       .expect(204)
-      .end(done);
+      .end(done)
   });
 
-  it('PUT /items/:itemId should return 204',(done)=>{
+  it('PUT /items/:itemId should return 204', (done) => {
+    const itemId = '587f0f2586653d19297d40c3';
     const item = {
       name: 'test6',
       price: 34,
-      categoryId: '587f0f2586653d19297d40c8'
+      category: '587f0f2586653d19297d40c8'
     };
     request
-      .put('/items/587f0f2586653d19297d40c3')
+      .put(`/items/${itemId}`)
       .send(item)
       .expect(204)
-      .end(done);
+      .end(done)
   });
+
 });

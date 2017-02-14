@@ -1,24 +1,29 @@
 require('should');
 const supertest = require('supertest');
+
 const express = require('express');
 const app = require('../app');
 const request = supertest(app);
 
-const refresh = require('../tools/refreshMongo');
 const Cart = require('../model/cart');
+const refresh = require('../tool/refreshMongo');
+
+beforeEach(() => {
+  refresh(() => {
+    mongoose.connection.close(function () {
+      process.exit(0);
+    })
+  });
+});
 
 describe('CartController', () => {
-  beforeEach(() => {
-    refresh();
-  });
-
-  it('GET /carts', (done) => {
+  it('GET /carts should return all carts', (done) => {
     request
       .get('/carts')
       .expect(200)
       .expect((res) => {
         res.body.totalCount.should.equal(1);
-        res.body.item.length.should.equal(1);
+        res.body.items.length.should.equal(1);
       })
       .end(done);
   });
@@ -44,10 +49,10 @@ describe('CartController', () => {
           }]
         });
       })
-      .end(done);
+      .end(done)
   });
 
-  it('POST /carts', (done) => {
+  it('POST /carts should return uri', (done) => {
     const cart = {
       userId: '2',
       items: [
@@ -57,6 +62,7 @@ describe('CartController', () => {
         }
       ]
     };
+
     request
       .post('/carts')
       .send(cart)
@@ -64,19 +70,13 @@ describe('CartController', () => {
       .expect((res) => {
         Cart.findOne({userId: '2'}, (err, doc) => {
           res.body.uri.should.equal(`carts/${doc._id}`);
-        });
+        })
       })
       .end(done);
   });
 
-  it('DELETE /carts/:cartId', (done) => {
-    request
-      .delete('/carts/587f0f2586653d19297d40c6')
-      .expect(204)
-      .end(done);
-  });
-
-  it('PUT /carts/:cartId', (done) => {
+  it('PUT /carts/:cartId should return 204', (done) => {
+    const cartId = '587f0f2586653d19297d40c6';
     const cart = {
       userId: '9',
       items: [
@@ -88,8 +88,15 @@ describe('CartController', () => {
     };
 
     request
-      .put('/carts/587f0f2586653d19297d40c6')
+      .put(`/carts/${cartId}`)
       .send(cart)
+      .expect(204)
+      .end(done);
+  });
+
+  it('DELETE /carts/:cartId should return 204', (done) => {
+    request
+      .delete('/carts/587f0f2586653d19297d40c6')
       .expect(204)
       .end(done);
   });

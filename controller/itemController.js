@@ -1,13 +1,13 @@
-const async = require('async');
 const Item = require('../model/item');
 const constant = require('../config/constant');
+const async = require('async');
 
 class ItemController {
   getAll(req, res, next) {
     async.series({
-      item: (cb) => {
+      items: (cb) => {
         Item.find({})
-          .populate('categoryId')
+          .populate('category')
           .exec(cb)
       },
       totalCount: (cb) => {
@@ -24,7 +24,7 @@ class ItemController {
   getOne(req, res, next) {
     const itemId = req.params.itemId;
     Item.findById(itemId)
-      .populate('categoryId')
+      .populate('category')
       .exec((err, doc) => {
         if (err) {
           return next(err);
@@ -34,15 +34,6 @@ class ItemController {
         }
         return res.status(constant.httpCode.OK).send(doc);
       });
-  }
-
-  create(req, res, next) {
-    new Item(req.body).save((err, doc) => {
-      if (err) {
-        return next(err);
-      }
-      return res.status(constant.httpCode.CREATED).send({uri: `items/${doc._id}`});
-    });
   }
 
   delete(req, res, next) {
@@ -55,6 +46,15 @@ class ItemController {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);
+    });
+  }
+
+  create(req, res, next) {
+    Item.create(req.body, (err, doc) => {
+      if (err) {
+        return next(err);
+      }
+      return res.status(constant.httpCode.CREATED).send({uri: `items/${doc._id}`});
     });
   }
 

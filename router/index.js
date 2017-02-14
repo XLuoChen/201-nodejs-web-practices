@@ -1,6 +1,6 @@
-const items = require('./routers/items');
-const categories = require('./routers/categories');
-const carts = require('./routers/carts');
+const items = require('./router/items');
+const categories = require('./router/categories');
+const carts = require('./router/carts');
 
 module.exports = function (app) {
   app.use('/items', items);

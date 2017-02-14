@@ -13,15 +13,14 @@ const modelMap = {
 let docs = Object.keys(rawData);
 
 // mogoose.connect('mongodb://localhost/supermarket');
-module.exports = function refresh() {
+module.exports = function refresh(done) {
 
   Object.keys(rawData).forEach((v) => {
     modelMap[v].remove(() => {
       modelMap[v].create(rawData[v], () => {
         docs = docs.filter(doc => doc !== v);
         if (docs.length === 0) {
-          // console.log('refreshMongo success')
-          // process.exit(0);
+          done
         }
       })
     });
